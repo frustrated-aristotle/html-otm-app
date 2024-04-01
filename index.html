@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style type="text/css">
+        .navbar .form-control {
+            width: 50px;
+            background-color: antiquewhite;
+        }
+    
+        .content {
+            color: black;
+            font-weight: normal;
+        }
+    
+        .footer {
+            color: black;
+            margin-left: 30px;
+        }
+    
+        .rounded-card {
+            border-radius: 35px;
+            border: 1px solid #E1E8ED;
+        }
+    
+        body {
+            background-color: #ffff;
+        }
+    
+        .h7 {
+            font-size: 0.8rem;
+        }
+    
+        .gedf-wrapper {
+            margin-top: 0.97rem;
+        }
+    
+        @media (min-width: 992px) {
+            .gedf-main {
+                margin: 0 auto; /* Dikey hizalamayı sağlar */
+                float: none; /* Kaydırma özelliğini kaldırır */
+                padding-left: 4rem;
+                padding-right: 4rem;
+            }
+    
+            .gedf-card {
+                margin-bottom: 2.77rem;
+            }
+        }
+    
+    
+        /**Reset Bootstrap*/
+        .dropdown-toggle::after {
+            content: none;
+            display: none;
+        }
+    
+        .text-center{
+            text-align: center;
+        }
+    
+        .vertical-line {
+            border-left: 1px solid #ccc;
+            height: 100%;
+        }
+        
+        .spotify-link{
+            position:relative;
+        }
+    
+        .card-content{
+            font-size: 23px;
+        }
+    
+        .height{
+            align-content: center;
+            min-height: 75px;
+        }
+    
+        .card-link{
+            color: black;
+        }
+    
+        .share:hover{
+            color: green;
+        }
+    
+        .sticky{
+            position:sticky;
+            bottom: 0;
+            right : 0;
+            z-index:0;
+        }
+        
+    </style>
+</head>
+<body>
+    <header class="text-center">
+        <h1>OTM KESİT ŞOV HEY</h1>
+    </header>
+    <br/>
+    <br/>
+    <div class="container gedf-wrapper">
+        <div class="row">
+            <div id="cardContainer" class="col-md-9 gedf-main">
+                <!-- <div class="card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
+                    <div class="ml-3 mt-3 mr-3">
+                        <div class="h5 m-0">
+                            <h5 class="card-title">Sezon 1 Bölüm 4 - Şişman Çocuk</h5>
+                            <hr class="hr hr-blurry">
+                        </div>
+                    </div>
+                    <div class="card-body mr-1 row height">
+                        <div class="col-md-9 h4">
+                            <div class="content">Eski sevgilisi Esmeralda ile ortak Icloud hesabı kullanan şef</div>
+                        </div>
+                        <br>
+                        <div class="col-md-3 vertical-line height">
+                            <div class="spotify-link">
+                                <a href="https://open.spotify.com/episode/359ZuO5ViHrNgHsDgUMcf5?si=l8e5EUNXST6H9ezWSfsk6A&amp;t=129" target="_blank" class="card-link">
+                                    <i class="bi bi-spotify" style="font-size: 36px; color: green; vertical-align: middle;"></i>
+                                    <span style="vertical-align: middle;">Spotify'da Aç</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ml-3 mr">
+                        <hr class="hr hr-blurry">
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-share footer share"> Paylaş</i>
+                    </div>
+                </div>
+                
+                <div class="card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
+                    <div class="ml-3 mt-3 mr-3">
+                        <div class="h5 m-0">
+                            <h5 class="card-title">Sezon 1 Bölüm 4 - Şişman Çocuk</h5>
+                            <hr class="hr hr-blurry">
+                        </div>
+                    </div>
+                    <div class="card-body mr-1 row height">
+                        <div class="col-md-9 h4">
+                            <div class="content">İçip içip kapıya dayanan eski sevgilisi ve hoş karşı komşusu arasında kalan kız</div>
+                        </div>
+                        <br>
+                        <div class="col-md-3 vertical-line height">
+                            <div class="spotify-link">
+                                <a href="https://open.spotify.com/episode/359ZuO5ViHrNgHsDgUMcf5?si=WKMd97nBTcifwHHEJ931zA&amp;t=4609" target="_blank" class="card-link">
+                                    <i class="bi bi-spotify" style="font-size: 36px; color: green; vertical-align: middle;"></i>
+                                    <span style="vertical-align: middle;">Spotify'da Aç</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ml-3 mr">
+                        <hr class="hr hr-blurry">
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-share footer share"> Paylaş</i>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript"></script>
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhJTyPZintjfuPLN-yI6ykNeE48OVrrt4",
+            authDomain: "otm-share.firebaseapp.com",
+            projectId: "otm-share",
+            storageBucket: "otm-share.appspot.com",
+            messagingSenderId: "348092862020",
+            appId: "1:348092862020:web:ae23c9664f7998b011b611",
+            measurementId: "G-MXBLQQQSS3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+  
+        db.collection("Users").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                console.log(`${doc.id} => ${doc.data()}`);
+            });
+        });
+
+        db.collection("Section").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        const card = document.createElement("div");
+        card.classList.add("card", "gedf-card", "overflow-hidden", "shadow-lg", "rounded-pill", "rounded-lg", "rounded-card");
+        
+        const title = document.createElement("div");
+        title.classList.add("ml-3", "mr-3" ,"mt-3", "h5");
+        var seasonAndEpisodeStr = doc.data().seasonAndEpisode + "";
+        var arr = seasonAndEpisodeStr.split('.');
+        seasonAndEpisodeStr = "Sezon " + arr[0] + " Bölüm " + arr[1] + " - " + arr[2];
+        title.textContent = seasonAndEpisodeStr;
+        
+        const hr = document.createElement("hr");
+        hr.classList.add("hr", "hr-blurry");
+        
+        const body = document.createElement("div");
+        body.classList.add("card-body", "mr-1", "row", "height");
+        
+        const contentCol = document.createElement("div");
+        contentCol.classList.add("col-md-9", "h4");
+        const content = document.createElement("div");
+        content.classList.add("content");
+        content.textContent = doc.data().content;
+        contentCol.appendChild(content);
+        
+        const linkCol = document.createElement("div");
+        linkCol.classList.add("col-md-3", "vertical-line", "height");
+        const link = document.createElement("a");
+        link.href = doc.data().url;
+        link.target = "_blank";
+        link.classList.add("card-link");
+        const spotifyIcon = document.createElement("i");
+        spotifyIcon.classList.add("bi", "bi-spotify");
+        spotifyIcon.style.fontSize = "36px";
+        spotifyIcon.style.color = "green";
+        spotifyIcon.style.verticalAlign = "middle";
+        link.appendChild(spotifyIcon);
+        const span = document.createElement("span");
+        span.style.verticalAlign = "middle";
+        span.textContent = "Spotify'da Aç";
+        link.appendChild(span);
+        linkCol.appendChild(link);
+        
+        body.appendChild(contentCol);
+        body.appendChild(linkCol);
+        
+        const hr2 = document.createElement("hr");
+        hr2.classList.add("hr", "hr-blurry");
+        
+        const shareDiv = document.createElement("div");
+        shareDiv.classList.add("mb-3");
+        const shareIcon = document.createElement("i");
+        shareIcon.classList.add("bi", "bi-share", "footer", "share");
+        shareIcon.textContent = " Paylaş";
+        shareDiv.appendChild(shareIcon);
+        
+        card.appendChild(title);
+        card.appendChild(hr);
+        card.appendChild(body);
+        card.appendChild(hr2);
+        card.appendChild(shareDiv);
+        
+        // Kartı belirli bir container'a ekleyin
+        const container = document.getElementById("cardContainer"); // Örnek bir container
+        container.appendChild(card);
+    });
+});
+
+    </script>
+</body>
+</html>
