@@ -54,6 +54,21 @@
             }
         }
     
+        @media (max-width: 991px) {
+            .gedf-card {
+                margin-bottom: 20px; /* Kartlar arasındaki boşluğu artırdık */
+                height: auto; /* Kartların dikey boyutunu otomatik olarak ayarladık */
+            }
+
+            .card-body {
+                padding: 10px; /* Kart içeriği ile sınırlar arasındaki boşluğu azalttık */
+            }
+
+            .content {
+                font-size: 18px; /* Kart içeriğinin metin boyutunu küçülttük */
+            }
+        }
+
         @media (max-width: 768px)
         {
             .card-body{
@@ -122,8 +137,8 @@
     <br/>
     <br/>
     <div class="container gedf-wrapper">
-        <div class="row">
-            <div id="cardContainer" class="col-md-9 gedf-main">
+        <div class="row justify-content-center">
+            <div id="cardContainer" class="col-md-8 gedf-main">
                 <!-- <div class="card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
                     <div class="ml-3 mt-3 mr-3">
                         <div class="h5 m-0">
