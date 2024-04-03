@@ -84,7 +84,9 @@
             }
         }
     
-    
+        .gedf-card:hover{
+            background-color: rgb(243,243,243);
+        }
         /**Reset Bootstrap*/
         .dropdown-toggle::after {
             content: none;
@@ -206,6 +208,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script>
+
+        //Card Related Jobs
+
         const firebaseConfig = {
             apiKey: "AIzaSyBhJTyPZintjfuPLN-yI6ykNeE48OVrrt4",
             authDomain: "otm-share.firebaseapp.com",
@@ -230,7 +235,12 @@
     querySnapshot.forEach((doc) => {
         const card = document.createElement("div");
         card.classList.add("card", "gedf-card", "overflow-hidden", "shadow-lg", "rounded-pill", "rounded-lg", "rounded-card");
-        
+        card.addEventListener("click", function()
+        {
+            console.log("URL: " + doc.data().url);
+            // window.location.href = doc.data().url;
+            window.open(doc.data().url, '_blank');
+        });
         const title = document.createElement("div");
         title.classList.add("ml-3", "mr-3" ,"mt-3", "h5");
         var seasonAndEpisodeStr = doc.data().seasonAndEpisode + "";
@@ -250,7 +260,7 @@
         content.classList.add("content");
         content.textContent = doc.data().content;
         contentCol.appendChild(content);
-        
+        /*
         const linkCol = document.createElement("div");
         linkCol.classList.add("col-md-3", "vertical-line", "height");
         const link = document.createElement("a");
@@ -268,9 +278,9 @@
         span.textContent = "Spotify'da Aç";
         link.appendChild(span);
         linkCol.appendChild(link);
-        
+        */
         body.appendChild(contentCol);
-        body.appendChild(linkCol);
+        //body.appendChild(linkCol);
         
         const hr2 = document.createElement("hr");
         hr2.classList.add("hr", "hr-blurry");
