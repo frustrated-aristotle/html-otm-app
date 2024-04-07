@@ -118,7 +118,11 @@
         .card-link{
             color: black;
         }
-    
+        .share{
+            color: black;
+            background-color: antiquewhite;
+            transition: margin-right 2s;
+        }
         .share:hover{
             color: green;
         }
@@ -129,7 +133,7 @@
             right : 0;
             z-index:0;
         }
-        
+     
     </style>
 </head>
 <body>
@@ -288,9 +292,18 @@
         const shareDiv = document.createElement("div");
         shareDiv.classList.add("mb-3");
         const shareIcon = document.createElement("i");
+        const spoti = document.createElement("icon");
+        spoti.classList.add("bi-spotify");
+        shareIcon.addEventListener("click", function()
+        {
+            console.log("Share div working hey dudii");
+            event.stopPropagation();
+            copyUrlToClipboard(doc.data().url);
+        });
         shareIcon.classList.add("bi", "bi-share", "footer", "share");
         shareIcon.textContent = " Paylaş";
         shareDiv.appendChild(shareIcon);
+        shareIcon.appendChild(spoti);
         
         card.appendChild(title);
         card.appendChild(hr);
@@ -303,7 +316,22 @@
         container.appendChild(card);
     });
 });
-
+function copyUrlToClipboard(url) {
+    // Geçici bir textarea oluştur
+    var textarea = document.createElement("textarea");
+    // URL'yi textarea içine yerleştir
+    textarea.value = url;
+    // Doküman içinde textarea'yı gizle
+    textarea.style.position = "fixed";
+    textarea.style.opacity = 0;
+    document.body.appendChild(textarea);
+    // URL'yi seç ve kopyala
+    textarea.select();
+    document.execCommand("copy");
+    // Artık textarea'ya ihtiyacımız yok, dolayısıyla onu kaldır
+    document.body.removeChild(textarea);
+    alert("Link Kopyalandı Şefim!");
+}
     </script>
 </body>
 </html>
