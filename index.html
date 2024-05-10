@@ -132,7 +132,6 @@
       }
       .share {
         color: black;
-        background-color: antiquewhite;
         transition: margin-right 2s;
       }
       .share:hover {
@@ -144,6 +143,14 @@
         bottom: 0;
         right: 0;
         z-index: 0;
+      }
+      .profile-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+        border-color: #7952b3;
+        border-style: outset;
       }
     </style>
   </head>
@@ -186,9 +193,44 @@
     </nav>
     <br />
     <br />
-
     <div class="container gedf-wrapper">
-      <div class="row justify-content-center">
+      <div class="justify-content-center">
+        <div class="col-md-8 gedf-main">
+          <div
+            class="card-body card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card"
+          >
+            <form id="sectionCreationForm">
+              <div class="form-group">
+                <label for="postContent">Kesit</label>
+                <textarea
+                  class="form-control"
+                  id="postContent"
+                  rows="3"
+                  placeholder="Neye güldün?"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="postLink">Link</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="postLink"
+                  placeholder="Link"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                id="createSection"
+                class="btn"
+                style="background-color: #7952b3; color: whitesmoke"
+              >
+                Kesit Oluştur
+              </button>
+            </form>
+          </div>
+        </div>
+
         <div id="cardContainer" class="col-md-8 gedf-main"></div>
       </div>
     </div>
@@ -200,7 +242,277 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script>
       //Card Related Jobs
-      var userID = localStorage.getItem("email");
+      var userID = localStorage.getItem("uid");
+      console.log(userID);
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyBhJTyPZintjfuPLN-yI6ykNeE48OVrrt4",
+        authDomain: "otm-share.firebaseapp.com",
+        projectId: "otm-share",
+        storageBucket: "otm-share.appspot.com",
+        messagingSenderId: "348092862020",
+        appId: "1:348092862020:web:ae23c9664f7998b011b611",
+        measurementId: "G-MXBLQQQSS3",
+      };
+    
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    
+      db.collection("Section").orderBy("createTime", "desc").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const creatorUid = doc.data().creator;
+          let userName = "";
+    
+          // Belirli bir kullanıcının verilerini Users koleksiyonundan al
+          db.collection("Users").doc(creatorUid).get().then((userDoc) => {
+            if (userDoc.exists) {
+              // Kullanıcının adını alma
+              userName = userDoc.data().username;
+    
+              const card = document.createElement("div");
+              card.classList.add(
+                "card",
+                "gedf-card",
+                "overflow-hidden",
+                "shadow-lg",
+                "rounded-pill",
+                "rounded-lg",
+                "rounded-card"
+              );
+    
+              card.addEventListener("click", function () {
+                console.log("URL: " + doc.data().url);
+                // window.location.href = doc.data().url;
+                window.open(doc.data().url, "_blank");
+              });
+    
+              const title = document.createElement("div");
+              title.classList.add("ml-3", "mr-3", "mt-3", "h5");
+    
+              const profileImg = document.createElement("img");
+              profileImg.classList.add("profile-img");
+              profileImg.src = "img.png";
+    
+              var seasonAndEpisodeStr = doc.data().seasonAndEpisode + "";
+              var arr = seasonAndEpisodeStr.split(".");
+              seasonAndEpisodeStr =
+                "Sezon " + arr[0] + " Bölüm " + arr[1] + " - " + arr[2];
+    
+              const hr = document.createElement("hr");
+              hr.classList.add("hr", "hr-blurry");
+    
+              const body = document.createElement("div");
+              body.classList.add("card-body", "mr-1", "row", "height");
+    
+              const contentCol = document.createElement("div");
+              contentCol.classList.add("col-md-9", "h4");
+    
+              const content = document.createElement("div");
+              content.classList.add("content");
+              content.textContent = doc.data().content;
+              contentCol.appendChild(content);
+              body.appendChild(contentCol);
+    
+              const hr2 = document.createElement("hr");
+              hr2.classList.add("hr", "hr-blurry");
+    
+              const shareDiv = document.createElement("div");
+              shareDiv.classList.add("mb-3");
+    
+              const shareIcon = document.createElement("i");
+              const spoti = document.createElement("icon");
+              spoti.classList.add("bi-spotify");
+    
+              shareIcon.addEventListener("click", function () {
+                console.log("Share div working hey dudii");
+                event.stopPropagation();
+                copyUrlToClipboard(doc.data().url);
+              });
+    
+              shareIcon.classList.add("bi", "bi-share", "footer", "share");
+              shareIcon.textContent = " Paylaş";
+              shareDiv.appendChild(shareIcon);
+              shareIcon.appendChild(spoti);
+    
+              card.appendChild(title);
+              title.appendChild(profileImg);
+              title.innerHTML += userName;
+              card.appendChild(hr);
+              card.appendChild(body);
+              card.appendChild(hr2);
+              card.appendChild(shareDiv);
+    
+              // Kartı belirli bir container'a ekleyin
+              const container = document.getElementById("cardContainer");
+              container.appendChild(card);
+            } else {
+              console.log("Kullanıcı belgesi bulunamadı.");
+            }
+          }).catch((error) => {
+            console.error("Kullanıcı belgesini alma hatası: ", error);
+          });
+        });
+      });
+    
+      function copyUrlToClipboard(url) {
+        // Geçici bir textarea oluştur
+        var textarea = document.createElement("textarea");
+        // URL'yi textarea içine yerleştir
+        textarea.value = url;
+        // Doküman içinde textarea'yı gizle
+        textarea.style.position = "fixed";
+        textarea.style.opacity = 0;
+        document.body.appendChild(textarea);
+        // URL'yi seç ve kopyala
+        textarea.select();
+        document.execCommand("copy");
+        // Artık textarea'ya ihtiyacımız yok, dolayısıyla onu kaldır
+        document.body.removeChild(textarea);
+        alert("Link Kopyalandı Şefim!");
+      }
+    
+      //Sharing a new section:
+      var highestId = 0;
+      function findHighestID() {
+        return db
+          .collection("Section")
+          .orderBy("id", "desc")
+          .limit(1)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, " => ", doc.data());
+              highestId = doc.data().id + 1;
+              console.log(highestId);
+            });
+          });
+      }
+    
+      const sectionForm = document.getElementById("sectionCreationForm");
+      sectionForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Formun varsayılan davranışını engelle
+    
+        // Burada kayıt işlemlerini yapabilirsiniz
+        sectionCreation();
+        sectionForm.reset();
+      });
+    
+      function sectionCreation() {
+        var postLink = document.getElementById("postLink").value;
+        var content = document.getElementById("postContent").value;
+        if (localStorage.getItem("uid")) {
+          db.collection("Section")
+            .orderBy("id", "desc")
+            .limit(1)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                console.log(doc.id, " => ", doc.data());
+                highestId = doc.data().id + 1;
+                createSection(postLink, content);
+              });
+            });
+        } else alert("uid is", localStorage.getItem("uid"));
+      }
+    
+      function createSection(postLink, content) {
+        const currentTimeStamp = firebase.firestore.Timestamp.fromDate(new Date());
+
+        db.collection("Section")
+          .add({
+            content: content,
+            createTime: currentTimeStamp,
+            creator: localStorage.getItem("uid"),
+            id: highestId,
+            isActive: true,
+            likeCount: 0,
+            likers: [],
+            saveCount: 0,
+            savers: [],
+            sharers: [],
+            shareCount: 0,
+            url: postLink,
+          })
+          .then(function (docRef) {
+            console.log("Document written with ID: ", docRef.id);
+            addSectionToCreator(docRef.id);
+            // Veri başarıyla eklendiğinde kullanıcıya bilgi vermek için uygun bir mesaj görüntüleyebilirsiniz.
+            alert("Veri başarıyla eklendi!");
+          })
+          .catch(function (error) {
+            console.error("Error adding document: ", error);
+            // Hata durumunda kullanıcıya bilgi vermek için uygun bir mesaj görüntüleyebilirsiniz.
+            alert("Veri eklenirken bir hata oluştu!");
+          });
+      }
+      
+      function addSectionToCreator(docId)
+      {
+        const uid = localStorage.getItem("uid"); // Kullanıcı kimliğini al
+        console.log(uid);
+        // Kullanıcı belgesini al ve güncelleme işlemini gerçekleştir
+        db.collection("Users").doc(uid).get().then((doc) => {
+          if (doc.exists) {
+            const shares = doc.data().shares || []; // Kullanıcının mevcut paylaşımlarını al, yoksa boş bir dizi oluştur
+
+            // Yeni bir paylaşım ekleyerek paylaşımlar dizisini güncelle
+            shares.push(docId);
+
+            // Kullanıcı belgesini güncelle
+            db.collection("Users").doc(uid).update({
+              shares: shares
+            })
+            .then(() => {
+              console.log("Shares eklendi");
+            })
+            .catch((error) => {
+              console.error("Shares eklenemedi ", error);
+            });
+          } else {
+            console.log("Sharesde kullanıcı belgesi bulunamadı.");
+          }
+        })
+        .catch((error) => {
+          console.error("Kullanıcı belgesini alma hatası: ", error);
+        });
+
+      }
+       /*
+      var collectionRef = db.collection("Section");
+      // Toplu işlem başlat
+      const batch = db.batch();
+
+      // Koleksiyondaki her belgeyi güncelle
+      collectionRef
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // Her belgeyi güncelleme işlemine ekle
+            batch.update(doc.ref, {
+                //creator: "AXDi0H549id10hfdf6sxxmiAW0h1" 
+                likers: [],
+                savers: [],
+                sharers: [],
+            });
+          });
+
+          // Toplu işlemi commit et
+          return batch.commit();
+        })
+        .then(() => {
+          console.log("Tüm belgeler başarıyla güncellendi!");
+        })
+        .catch((error) => {
+          console.error("Belgeler güncellenirken hata oluştu: ", error);
+        });
+        */
+    </script>
+ 
+    <!-- <script>
+      //Card Related Jobs
+      var userID = localStorage.getItem("uid");
+      console.log(userID);
       const firebaseConfig = {
         apiKey: "AIzaSyBhJTyPZintjfuPLN-yI6ykNeE48OVrrt4",
         authDomain: "otm-share.firebaseapp.com",
@@ -218,7 +530,16 @@
         .get()
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            const card = document.createElement("div");
+
+            const creatorUid = doc.data().creator;
+            let userName="";
+            // Belirli bir kullanıcının verilerini Users koleksiyonundan al
+            db.collection("Users").doc(creatorUid).get().then((userDoc) => {
+              if (userDoc.exists) {
+                // Kullanıcının adını alma
+                userName = userDoc.data().username;
+
+                const card = document.createElement("div");
             card.classList.add(
               "card",
               "gedf-card",
@@ -235,11 +556,13 @@
             });
             const title = document.createElement("div");
             title.classList.add("ml-3", "mr-3", "mt-3", "h5");
+            const profileImg = document.createElement("img");
+            profileImg.classList.add("profile-img");
+            profileImg.src ="img.png";
             var seasonAndEpisodeStr = doc.data().seasonAndEpisode + "";
             var arr = seasonAndEpisodeStr.split(".");
             seasonAndEpisodeStr =
               "Sezon " + arr[0] + " Bölüm " + arr[1] + " - " + arr[2];
-            title.textContent = seasonAndEpisodeStr;
 
             const hr = document.createElement("hr");
             hr.classList.add("hr", "hr-blurry");
@@ -275,14 +598,21 @@
             shareIcon.appendChild(spoti);
 
             card.appendChild(title);
+            title.appendChild(profileImg);
+            title.innerHTML+= userName;//seasonAndEpisodeStr;
             card.appendChild(hr);
             card.appendChild(body);
             card.appendChild(hr2);
             card.appendChild(shareDiv);
-
             // Kartı belirli bir container'a ekleyin
             const container = document.getElementById("cardContainer"); // Örnek bir container
             container.appendChild(card);
+              } else {
+                console.log("Kullanıcı belgesi bulunamadı.");
+              }
+            }).catch((error) => {
+              console.error("Kullanıcı belgesini alma hatası: ", error);
+            });
           });
         });
       function copyUrlToClipboard(url) {
@@ -330,6 +660,75 @@
           console.error("Belgeler güncellenirken hata oluştu: ", error);
         });
         */
+
+      //Sharing a new section:
+      var highestId = 0;
+      function findHighestID() {
+        return db
+          .collection("Section")
+          .orderBy("id", "desc")
+          .limit(1)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, " => ", doc.data());
+              highestId = doc.data().id + 1;
+              console.log(highestId);
+            });
+          });
+      }
+      const sectionForm = document.getElementById("sectionCreationForm");
+      sectionForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Formun varsayılan davranışını engelle
+
+        // Burada kayıt işlemlerini yapabilirsiniz
+        sectionCreation();
+        sectionForm.reset();
+      });
+      function sectionCreation() {
+        var postLink = document.getElementById("postLink").value;
+        var content = document.getElementById("postContent").value;
+        if (localStorage.getItem("uid")) {
+          db.collection("Section")
+            .orderBy("id", "desc")
+            .limit(1)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                console.log(doc.id, " => ", doc.data());
+                highestId = doc.data().id + 1;
+                createSection(postLink, content);
+              });
+            });
+        } else alert("uid is", localStorage.getItem("uid"));
+      }
+
+      function createSection(postLink, content) {
+        db.collection("Section")
+          .add({
+            content: content,
+            creator: localStorage.getItem("uid"),
+            id: highestId,
+            isActive: true,
+            likeCount: 0,
+            likers: [],
+            saveCount: 0,
+            savers: [],
+            sharers: [],
+            shareCount: 0,
+            url: postLink,
+          })
+          .then(function (docRef) {
+            console.log("Document written with ID: ", docRef.id);
+            // Veri başarıyla eklendiğinde kullanıcıya bilgi vermek için uygun bir mesaj görüntüleyebilirsiniz.
+            alert("Veri başarıyla eklendi!");
+          })
+          .catch(function (error) {
+            console.error("Error adding document: ", error);
+            // Hata durumunda kullanıcıya bilgi vermek için uygun bir mesaj görüntüleyebilirsiniz.
+            alert("Veri eklenirken bir hata oluştu!");
+          });
+      }
     </script>
-  </body>
+  </body> -->
 </html>

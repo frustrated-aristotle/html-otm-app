@@ -175,7 +175,7 @@
             // Signed up
             var user = userCredential.user;
             alert("Kayıt başarılı, giriş yapabilirsiniz!");
-            localStorage.setItem("email", email);
+            localStorage.setItem("uid", user.uid);
             addUser(user.uid);
           })
           .catch((error) => {
