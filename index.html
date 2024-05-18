@@ -32,10 +32,6 @@
         font-weight: normal;
       }
 
-      .footer {
-        color: black;
-        margin-left: 30px;
-      }
 
       .rounded-card {
         border-radius: 35px;
@@ -120,6 +116,7 @@
 
       .card-content {
         font-size: 23px;
+        cursor: pointer;
       }
 
       .height {
@@ -151,6 +148,26 @@
         margin-right: 10px;
         border-color: #7952b3;
         border-style: outset;
+      }
+
+      .profile-img:hover{
+        filter: brightness(90%);
+        cursor: pointer;
+      }
+      .profile-a{
+        color: black;
+      }
+      .footer{
+        color: black;
+        margin-left: 15px;
+        font-style: normal;
+        padding: 5px 10px 5px 10px;
+      }
+
+      .footer:hover{
+        background-color: whitesmoke;
+        filter: brightness(90%);
+        border-radius: 15px;
       }
     </style>
   </head>
@@ -263,13 +280,14 @@
         querySnapshot.forEach((doc) => {
           const creatorUid = doc.data().creator;
           let userName = "";
-    
+          let userPP="";
           // Belirli bir kullanıcının verilerini Users koleksiyonundan al
           db.collection("Users").doc(creatorUid).get().then((userDoc) => {
             if (userDoc.exists) {
               // Kullanıcının adını alma
               userName = userDoc.data().username;
-    
+              userPP = userDoc.data().avatar;
+              console.log(userPP);
               const card = document.createElement("div");
               card.classList.add(
                 "card",
@@ -290,9 +308,10 @@
               const title = document.createElement("div");
               title.classList.add("ml-3", "mr-3", "mt-3", "h5");
     
+              //Username Link
               const profileImg = document.createElement("img");
               profileImg.classList.add("profile-img");
-              profileImg.src = "img.png";
+              profileImg.src = userPP;
     
               var seasonAndEpisodeStr = doc.data().seasonAndEpisode + "";
               var arr = seasonAndEpisodeStr.split(".");
@@ -309,6 +328,7 @@
               contentCol.classList.add("col-md-9", "h4");
     
               const content = document.createElement("div");
+              content.setAttribute("style", "cursor: pointer");
               content.classList.add("content");
               content.textContent = doc.data().content;
               contentCol.appendChild(content);
@@ -317,8 +337,8 @@
               const hr2 = document.createElement("hr");
               hr2.classList.add("hr", "hr-blurry");
     
-              const shareDiv = document.createElement("div");
-              shareDiv.classList.add("mb-3");
+              const footerDiv = document.createElement("div");
+              footerDiv.classList.add("mb-3");
     
               const shareIcon = document.createElement("i");
               const spoti = document.createElement("icon");
@@ -330,18 +350,34 @@
                 copyUrlToClipboard(doc.data().url);
               });
     
-              shareIcon.classList.add("bi", "bi-share", "footer", "share");
-              shareIcon.textContent = " Paylaş";
-              shareDiv.appendChild(shareIcon);
-              shareIcon.appendChild(spoti);
-    
+              shareIcon.classList.add("bi", "bi-share", "footer");//,"card-footer");
+
+              const loveIcon = document.createElement("i");
+              loveIcon.classList.add("bi", "bi-heart", "footer");
+              loveIcon.textContent=" 999";
+
+              const commentIcon = document.createElement("i");
+              commentIcon.classList.add("bi", "bi-chat", "footer");
+        
+              // shareIcon.textContent = " Paylaş";
+              footerDiv.appendChild(shareIcon);
+              footerDiv.appendChild(commentIcon);
+              footerDiv.appendChild(loveIcon);
+              // shareIcon.appendChild(spoti);
               card.appendChild(title);
               title.appendChild(profileImg);
-              title.innerHTML += userName;
+              // title.innerHTML += userName;
+              // title.innerHTML += '<a class="profile-a" href="/profile/'+userName+'">'+userName+'</a>';
+              title.innerHTML += '<a class="profile-a" href="profile.html?='+userName+'">'+userName+'</a>';
+              title.addEventListener("click", function()
+              {
+                event.stopPropagation();
+                window.location="profile.html?="+userName;
+              });
               card.appendChild(hr);
               card.appendChild(body);
               card.appendChild(hr2);
-              card.appendChild(shareDiv);
+              card.appendChild(footerDiv);
     
               // Kartı belirli bir container'a ekleyin
               const container = document.getElementById("cardContainer");

@@ -29,6 +29,33 @@
       .card {
         background-color: #7952b3;
       }
+
+      .profile-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border-color: #7952b3;
+        border-style: outset;
+      }
+
+      .avatar-container {
+        display: inline-block;
+        text-align: center;
+        margin: 10px 10px 10px 10px;
+      }
+
+      .avatar-container input[type="radio"] {
+        display: block;
+        margin: 10px auto 0;
+      }
+      .placeholder {
+            font-size: 1.25rem;
+            margin-left: 1rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            display: block;
+            padding-top: 0.5rem;
+        }
     </style>
   </head>
 
@@ -107,6 +134,60 @@
                         required
                       />
                     </div>
+                    <div id="avatar-selector" class="form-outline form-white mb-4 rounded" style="background-color: white;">
+                      <span
+                        class="placeholder text-start"
+                      >
+                      Select Your Avatar
+                    </span>
+                    <div class="avatar-container">
+                      <img src="avatar1.png" class="avatar profile-img" alt="Avatar 1">
+                      <input type="radio" name="avatar" value="avatar1.png">
+                    </div>
+                    <div class="avatar-container">
+                      <img src="avatar2.png" class="avatar profile-img" alt="Avatar 2">
+                      <input type="radio" name="avatar" value="avatar2.png">
+                    </div>
+                    <div class="avatar-container">
+                      <img src="avatar3.png" class="avatar profile-img" alt="Avatar 3">
+                      <input type="radio" name="avatar" value="avatar3.png">
+                    </div>
+                    <div class="avatar-container">
+                      <img src="avatar4.png" class="avatar profile-img" alt="Avatar 4">
+                      <input type="radio" name="avatar" value="avatar4.png">
+                    </div>
+                    <br>
+                    
+                      <!-- <label>
+                        <input type="radio" name="avatar" value="avatar1" checked>
+                        <img src="img.png" class="avatar" alt="Avatar 1" width="60px" height="60px">
+                      </label>
+                      <label>
+                        <input type="radio" name="avatar" value="avatar2">
+                        <img src="img.png" class="avatar" alt="Avatar 1" width="60px" height="60px">
+                      </label>
+                      <label>
+                        <input type="radio" name="avatar" value="avatar3">
+                        <img src="img.png" class="avatar" alt="Avatar 1" width="60px" height="60px">
+                      </label> -->
+                    </div>
+
+
+                    <!-- <div class="card-body rounded" style="background-color: white ;">
+                      <div class="row">
+
+                        <div class="col-md-4">
+                          <img src="img.png" class="avatar" alt="Avatar 1" width="60px" height="60px">
+                          <input type="radio" name="avatar" value="avatar3">
+                        </div>
+                        <div class="col-md-4">
+                          <img src="img.png" class="avatar" alt="Avatar 1" width="60px" height="60px">
+                        </div>
+                        <div class="col-md-4">
+                          <img src="img.png" class="avatar" alt="Avatar 1" width="60px" height="60px">
+                        </div>
+                      </div>
+                    </div> -->
 
                     <button
                       data-mdb-button-init
@@ -132,6 +213,8 @@
 
     <!-- Add Firestore for database functionality -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
 
     <script>
       document
@@ -156,9 +239,10 @@
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
-
+      const storage = firebase.storage();
       // Function to handle registration
       function register() {
+        let avatarName = getSelectedAvatar();
         var btnRegister = document.getElementById("btnRegister");
         btnRegister.innerHTML =
           '<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>';
@@ -176,7 +260,7 @@
             var user = userCredential.user;
             alert("Kayıt başarılı, giriş yapabilirsiniz!");
             localStorage.setItem("uid", user.uid);
-            addUser(user.uid);
+            addUser(user.uid, avatarName);
           })
           .catch((error) => {
             var errorCode = error.code;
@@ -186,18 +270,55 @@
             // Handle errors here
           });
       }
-      function addUser(uid) {
+      function loadAvatars() {
+        const avatarSelector = document.getElementById('avatar-selector');
+        const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png']; // Add your avatar filenames here
+
+        avatars.forEach((avatar, index) => {
+          storage.ref(`avatar-templates/${avatar}`).getDownloadURL()
+            .then((url) => {
+              const avatarContainer = document.createElement('div');
+              avatarContainer.classList.add('avatar-container');
+              avatarContainer.innerHTML = `
+                <img src="${url}" class="avatar profile-img" alt="Avatar ${index + 1}">
+                <input type="radio" name="avatar" value="${avatar}" ${index === 0 ? 'checked' : ''}>
+              `;
+              avatarSelector.appendChild(avatarContainer);
+            })
+            .catch((error) => {
+              console.error('Error loading avatar:', error);
+            });
+        });
+      }
+
+      //loadAvatars();
+
+      function getSelectedAvatar() {
+          var avatarRadios = document.getElementsByName("avatar"); // Tüm radiobuttonları al
+          var selectedAvatar = ""; // Seçilen avatarın değerini tutacak değişken
+          // Her bir radiobutton'u kontrol edin
+          avatarRadios.forEach(function(radio) {
+              if (radio.checked) { // Eğer bir radiobutton seçiliyse
+                  selectedAvatar = radio.value; // Seçilen avatarın değerini alın
+              }
+          });
+          return selectedAvatar; // Seçilen avatarın değerini döndürün
+      }
+
+      
+      function addUser(uid, avatarName) {
         const email = document.getElementById("typeEmailX").value;
         const name = document.getElementById("typeNameX").value;
         const surname = document.getElementById("typeSurnameX").value;
         const username = document.getElementById("typeUsernameX").value;
-
+        
         const userData = {
           uid: uid,
           email: email,
           name: name,
           surname: surname,
           username: username,
+          avatar: avatarName,
         };
 
         const btnRegister = document.getElementById("btnRegister");
