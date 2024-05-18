@@ -281,9 +281,13 @@
           const creatorUid = doc.data().creator;
           let userName = "";
           let userPP="";
+          // console.log("Create Time: "+doc.data().createTime);
+          const pastTime= doc.data().createTime.toDate();
+          const elapsedTime = timeSince(pastTime);
           // Belirli bir kullanıcının verilerini Users koleksiyonundan al
           db.collection("Users").doc(creatorUid).get().then((userDoc) => {
             if (userDoc.exists) {
+
               // Kullanıcının adını alma
               userName = userDoc.data().username;
               userPP = userDoc.data().avatar;
@@ -369,6 +373,7 @@
               // title.innerHTML += userName;
               // title.innerHTML += '<a class="profile-a" href="/profile/'+userName+'">'+userName+'</a>';
               title.innerHTML += '<a class="profile-a" href="profile.html?='+userName+'">'+userName+'</a>';
+              title.innerHTML += "     "+ '<span style="color: gray">• '+ elapsedTime+'</span>';
               title.addEventListener("click", function()
               {
                 event.stopPropagation();
@@ -391,6 +396,28 @@
         });
       });
     
+      function timeSince(pastTime)
+      {
+        const now = Date.now();
+        const elapsed = now - pastTime; // milisaniye cinsinden geçen süre
+
+        const seconds = Math.floor(elapsed / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const months = Math.floor(days / 30);
+
+        if (days >= 1) {
+          const pastDate = new Date(pastTime);
+          return pastDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+        } else if (seconds < 60) {
+          return `${seconds} saniye`;
+        } else if (minutes < 60) {
+          return `${minutes} dakika`;
+        } else if (hours < 24) {
+          return `${hours} saat`;
+  }
+      }
       function copyUrlToClipboard(url) {
         // Geçici bir textarea oluştur
         var textarea = document.createElement("textarea");
