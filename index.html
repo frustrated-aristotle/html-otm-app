@@ -409,15 +409,15 @@
 
         if (days >= 1) {
           const pastDate = new Date(pastTime);
-          return pastDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
-        } else if (seconds < 60) {
-          return `${seconds} saniye`;
-        } else if (minutes < 60) {
-          return `${minutes} dakika`;
-        } else if (hours < 24) {
-          return `${hours} saat`;
-  }
+        return pastDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+      } else if (seconds < 60) {
+        return `${seconds} saniye`;
+      } else if (minutes < 60) {
+        return `${minutes} dakika`;
+      } else if (hours < 24) {
+        return `${hours} saat`;
       }
+    }
       function copyUrlToClipboard(url) {
         // Geçici bir textarea oluştur
         var textarea = document.createElement("textarea");
