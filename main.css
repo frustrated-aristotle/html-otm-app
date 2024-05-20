@@ -1,0 +1,163 @@
+a {
+    color: #e1e8ed;
+}
+
+.navbar .form-control {
+    width: 50px;
+    background-color: antiquewhite;
+}
+
+.content {
+    color: black;
+    font-weight: normal;
+}
+
+
+.rounded-card {
+    border-radius: 35px;
+    border: 1px solid #e1e8ed;
+}
+
+body {
+    background-color: #ffff;
+}
+
+.h7 {
+    font-size: 0.8rem;
+}
+
+.gedf-wrapper {
+    margin-top: 0.97rem;
+}
+
+@media (min-width: 992px) {
+    .gedf-main {
+        margin: 0 auto;
+        /* Dikey hizalamayı sağlar */
+        float: none;
+        /* Kaydırma özelliğini kaldırır */
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+
+    .gedf-card {
+        margin-bottom: 2.77rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .gedf-card {
+        margin-bottom: 20px;
+        /* Kartlar arasındaki boşluğu artırdık */
+        height: auto;
+        /* Kartların dikey boyutunu otomatik olarak ayarladık */
+    }
+
+    .card-body {
+        padding: 10px;
+        /* Kart içeriği ile sınırlar arasındaki boşluğu azalttık */
+    }
+
+    .content {
+        font-size: 18px;
+        /* Kart içeriğinin metin boyutunu küçülttük */
+    }
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 10px;
+    }
+
+    .content {
+        font-size: 16px;
+    }
+
+    .vertical-line {
+        display: none;
+    }
+}
+
+.gedf-card:hover {
+    background-color: rgb(243, 243, 243);
+}
+
+/**Reset Bootstrap*/
+.dropdown-toggle::after {
+    content: none;
+    display: none;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.vertical-line {
+    border-left: 1px solid #ccc;
+    height: 100%;
+}
+
+.spotify-link {
+    position: relative;
+}
+
+.card-content {
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.height {
+    align-content: center;
+    min-height: 75px;
+}
+
+.card-link {
+    color: black;
+}
+
+.share {
+    color: black;
+    transition: margin-right 2s;
+}
+
+.share:hover {
+    color: green;
+}
+
+.sticky {
+    position: sticky;
+    bottom: 0;
+    right: 0;
+    z-index: 0;
+}
+
+.profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border-color: #7952b3;
+    border-style: outset;
+}
+
+.profile-img:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+.profile-a {
+    color: black;
+}
+
+.footer {
+    color: black;
+    margin-left: 15px;
+    font-style: normal;
+    padding: 5px 10px 5px 10px;
+}
+
+.footer:hover {
+    background-color: whitesmoke;
+    filter: brightness(90%);
+    border-radius: 15px;
+}
