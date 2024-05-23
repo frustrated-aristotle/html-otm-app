@@ -27,7 +27,7 @@
         </div>
       </nav> -->
 
-  <nav class="navbar navbar-expand-lg" style="background-color: #7952b3">
+  <nav class="navbar navbar-expand-lg " style="background-color: #7952b3">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Navbar</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
@@ -35,12 +35,12 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+            <img src="avatar1.png" class="profile-img"></img>
           </li>
         </ul>
       </div>
@@ -106,9 +106,17 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    let sects = [];
+    
     db.collection("Section").orderBy("createTime", "desc").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
+        
         const creatorUid = doc.data().creator;
+        if (creatorUid === "AXDi0H549id10hfdf6sxxmiAW0h1")
+        {
+          sects.push(doc.id);
+          console.log(doc.id);
+        }
         let userName = "";
         let userPP = "";
         // console.log("Create Time: "+doc.data().createTime);
@@ -117,7 +125,15 @@
         // Belirli bir kullanıcının verilerini Users koleksiyonundan al
         db.collection("Users").doc(creatorUid).get().then((userDoc) => {
           if (userDoc.exists) {
-
+            /*
+            if (userDoc.data().uid === "AXDi0H549id10hfdf6sxxmiAW0h1")
+            {
+              let shares = userDoc.data().shares || [];
+              shares.push(doc.id);
+              db.collection("Users").doc("AXDi0H549id10hfdf6sxxmiAW0h1").update({
+                shares: shares
+              })
+            }*/
             // Kullanıcının adını alma
             userName = userDoc.data().username;
             userPP = userDoc.data().avatar;
@@ -188,7 +204,12 @@
 
             const loveIcon = document.createElement("i");
             loveIcon.classList.add("bi", "bi-heart", "footer");
-            loveIcon.textContent = " 999";
+            const likeCount = doc.data().likers.length;
+            if (likeCount == 0){
+              loveIcon.textContent = "";
+            }
+            else
+              loveIcon.textContent = " " + likeCount;
 
             const commentIcon = document.createElement("i");
             commentIcon.classList.add("bi", "bi-chat", "footer");
@@ -202,11 +223,11 @@
             title.appendChild(profileImg);
             // title.innerHTML += userName;
             // title.innerHTML += '<a class="profile-a" href="/profile/'+userName+'">'+userName+'</a>';
-            title.innerHTML += '<a class="profile-a" href="profile.html?=' + userName + '">' + userName + '</a>';
+            title.innerHTML += '<a class="profile-a" href="profile.html?=' + creatorUid + '">' + userName + '</a>';
             title.innerHTML += "     " + '<span style="color: gray">• ' + elapsedTime + '</span>';
             title.addEventListener("click", function () {
               event.stopPropagation();
-              window.location = "profile.html?=" + userName;
+              window.location = "profile.html?=" + creatorUid;
             });
             card.appendChild(hr);
             card.appendChild(body);
@@ -225,6 +246,8 @@
       });
     });
 
+  
+    
     function timeSince(pastTime) {
       const now = Date.now();
       const elapsed = now - pastTime; // milisaniye cinsinden geçen süre

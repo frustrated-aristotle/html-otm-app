@@ -79,7 +79,7 @@ body {
 }
 
 .gedf-card:hover {
-    background-color: rgb(243, 243, 243);
+    background-color: rgba(0,0,0,0.03);
 }
 
 /**Reset Bootstrap*/

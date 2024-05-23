@@ -15,28 +15,31 @@
 </head>
 <body>
 <div class="container gedf-wrapper">
+    <aside>
+        <div class="card-body card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
+            Aside hey
+        </div>
+    </aside>
     <div class="justify-content-center row">
         <div class="col-md-8 gedf-main">
-            <div class="card-body card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
+            <div class="card-body card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card" style="margin-bottom: 20px;">
                 <div class="container row">
                     <div class="col-md-5" >
-                        <img class="profile-img img-fluid" src="avatar1.png" alt="avatar" style="height: 175px; width: 175px;">
+                        <img id="pp" class="profile-img img-fluid" src="pp_filler.png  " alt="avatar" style="height: 175px; width: 175px;">
                     </div>
                     <div class="col-md-7">
                         <div class="row">
-                            <span>
-                                podcastiadir_bu
+                            <span id="user_name" class="font-weight-bold">
                             </span>
                         </div>
                         <div class="row" style="margin-top: 15px">
-                            
-                            <span  style="margin-right: 15px; border-radius: 15px; background-color: whitesmoke; padding: 5px 10px 5px 10px;">125 Kesit</span><span style="margin-right: 15px; border-radius: 15px; background-color: whitesmoke; padding: 5px 10px 5px 10px;">26 Takipçi</span><span style="margin-right: 15px; border-radius: 15px; background-color: whitesmoke;padding: 5px 10px 5px 10px;">13 Takip</span>
+                            <span  style="margin-right: 15px; border-radius: 15px; background-color: whitesmoke; padding: 5px 10px 5px 10px;" id="section_count">125 Kesit</span><span style="margin-right: 15px; border-radius: 15px; background-color: whitesmoke; padding: 5px 10px 5px 10px;" id="followers">26 Takipçi</span><span style="margin-right: 15px; border-radius: 15px; background-color: whitesmoke;padding: 5px 10px 5px 10px;" id="followed">13 Takip</span>
                         </div>
                         <div class="row" style="margin-top: 15px">
-                            Podcastiadır Bu
+                            <span id="full_name" style="font-weight: 500"></span> 
                         </div>
                         <div class="row" style="margin-top: 5px">
-                            Burası da biyografi kısmıdır efenimmasdfadsfasdfasdfadsfasdfffffffffffffffffff.
+                            <span id="bio">Bio</span>
                         </div>
                     </div>
                 </div>
@@ -44,11 +47,14 @@
         </div>
     </div>
     <div class="justify-content-center row">
+        <!-- 
         <div class="col-md-2">
             <div class="card-body card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
                 Left Sider
             </div>
         </div>
+        -->
+        
         <div class="col-md-8 gedf-main">
             <div class="card-body card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
                 <form id="sectionCreationForm">
@@ -67,26 +73,194 @@
             </div>
             <div id="cardContainer" class=""></div>
         </div>
+        <!-- 
         <div class="col-md-2">
-
             <div class="card-body card gedf-card overflow-hidden shadow-lg rounded-pill rounded-lg rounded-card">
                 Right Sider
             </div>
         </div>
+        -->
     </div>
 </div>
-
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script>
-         function getQueryParam(param) {
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhJTyPZintjfuPLN-yI6ykNeE48OVrrt4",
+            authDomain: "otm-share.firebaseapp.com",
+            projectId: "otm-share",
+            storageBucket: "otm-share.appspot.com",
+            messagingSenderId: "348092862020",
+            appId: "1:348092862020:web:ae23c9664f7998b011b611",
+            measurementId: "G-MXBLQQQSS3",
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
         // Kullanıcı adını URL parametresinden al
-        const userName = getQueryParam('');
+        const userID = getQueryParam('');
         $(document).ready(function(){
-        document.title = userName;
+        document.title = userID;
          })
+        
+        db.collection("Users").doc(userID).get().then(function(userDoc)
+        {
+            if (userDoc.exists) {
+                document.title = userDoc.data().username;
+                document.getElementById("pp").src = userDoc.data().avatar;
+                document.getElementById("user_name").innerHTML = userDoc.data().username;
+                document.getElementById("full_name").innerHTML = userDoc.data().name + " " + userDoc.data().surname;
+                document.getElementById("section_count").innerHTML = userDoc.data().shares.length + " Kesit";
+                document.getElementById("followers").innerHTML = userDoc.data().followers.length + " Takipçi";
+                document.getElementById("followed").innerHTML = userDoc.data().followed.length + " Takip";
+                
+                let shares = userDoc.data().shares;
+                shares.forEach((share) => {
+                       db.collection("Section").doc(share).get().then((doc) => {
+
+                           const creatorUid = doc.data().creator;
+                           let userName = "";
+                           let userPP = "";
+
+                           const pastTime = doc.data().createTime.toDate();
+                           const elapsedTime = timeSince(pastTime);
+
+                           userName = userDoc.data().username;
+                           userPP = userDoc.data().avatar;
+
+                           const card = document.createElement("div");
+                           card.classList.add(
+                               "card",
+                               "gedf-card",
+                               "overflow-hidden",
+                               "shadow-lg",
+                               "rounded-pill",
+                               "rounded-lg",
+                               "rounded-card"
+                           );
+
+                           card.addEventListener("click", function () {
+                               console.log("URL: " + doc.data().url);
+                               // window.location.href = doc.data().url;
+                               window.open(doc.data().url, "_blank");
+                           });
+
+                           const title = document.createElement("div");
+                           title.classList.add("ml-3", "mr-3", "mt-3", "h5");
+
+                           //Username Link
+                           const profileImg = document.createElement("img");
+                           profileImg.classList.add("profile-img");
+                           profileImg.src = userPP;
+
+                           var seasonAndEpisodeStr = doc.data().seasonAndEpisode + "";
+                           var arr = seasonAndEpisodeStr.split(".");
+                           seasonAndEpisodeStr =
+                               "Sezon " + arr[0] + " Bölüm " + arr[1] + " - " + arr[2];
+
+                           const hr = document.createElement("hr");
+                           hr.classList.add("hr", "hr-blurry");
+
+                           const body = document.createElement("div");
+                           body.classList.add("card-body", "mr-1", "row", "height");
+
+                           const contentCol = document.createElement("div");
+                           contentCol.classList.add("col-md-9", "h4");
+
+                           const content = document.createElement("div");
+                           content.setAttribute("style", "cursor: pointer");
+                           content.classList.add("content");
+                           content.textContent = doc.data().content;
+                           contentCol.appendChild(content);
+                           body.appendChild(contentCol);
+
+                           const hr2 = document.createElement("hr");
+                           hr2.classList.add("hr", "hr-blurry");
+
+                           const footerDiv = document.createElement("div");
+                           footerDiv.classList.add("mb-3");
+
+                           const shareIcon = document.createElement("i");
+                           const spoti = document.createElement("icon");
+                           spoti.classList.add("bi-spotify");
+
+                           shareIcon.addEventListener("click", function () {
+                               console.log("Share div working hey dudii");
+                               event.stopPropagation();
+                               copyUrlToClipboard(doc.data().url);
+                           });
+
+                           shareIcon.classList.add("bi", "bi-share", "footer");//,"card-footer");
+
+                           const loveIcon = document.createElement("i");
+                           loveIcon.classList.add("bi", "bi-heart", "footer");
+                           const likeCount = doc.data().likers.length;
+                           if (likeCount == 0){
+                            loveIcon.textContent = "";
+                           }
+                           else
+                            loveIcon.textContent = " " + likeCount;
+
+                           const commentIcon = document.createElement("i");
+                           commentIcon.classList.add("bi", "bi-chat", "footer");
+
+                           // shareIcon.textContent = " Paylaş";
+                           footerDiv.appendChild(shareIcon);
+                           footerDiv.appendChild(commentIcon);
+                           footerDiv.appendChild(loveIcon);
+                           // shareIcon.appendChild(spoti);
+                           card.appendChild(title);
+                           title.appendChild(profileImg);
+                           // title.innerHTML += userName;
+                           // title.innerHTML += '<a class="profile-a" href="/profile/'+userName+'">'+userName+'</a>';
+                           title.innerHTML += '<a class="profile-a" href="profile.html?=' + creatorUid + '">' + userName + '</a>';
+                           title.innerHTML += "     " + '<span style="color: gray">• ' + elapsedTime + '</span>';
+                           title.addEventListener("click", function () {
+                               event.stopPropagation();
+                               window.location = "profile.html?=" + creatorUid;
+                           });
+                           card.appendChild(hr);
+                           card.appendChild(body);
+                           card.appendChild(hr2);
+                           card.appendChild(footerDiv);
+
+                           // Kartı belirli bir container'a ekleyin
+                           const container = document.getElementById("cardContainer");
+                           container.appendChild(card);
+                       });
+                })
+            }
+        });
+
+
+        function timeSince(pastTime) {
+            const now = Date.now();
+            const elapsed = now - pastTime; // milisaniye cinsinden geçen süre
+
+            const seconds = Math.floor(elapsed / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const months = Math.floor(days / 30);
+
+            if (days >= 1) {
+                const pastDate = new Date(pastTime);
+                return pastDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+            } else if (seconds < 60) {
+                return `${seconds} saniye`;
+            } else if (minutes < 60) {
+                return `${minutes} dakika`;
+            } else if (hours < 24) {
+                return `${hours} saat`;
+            }
+        }
     </script>
 </body>
 </html>
