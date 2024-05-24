@@ -12,7 +12,21 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="main.css">
   <style type="text/css">
+    .dropdown-toggle::after {
+      display: none;
+      content: none;
+      border: none;
+    }
+    .dropdown-toggle {
+      border: none;
+      background: none;
+      padding: 0;
+    }
     
+    .dropdown-menu{
+      right: 0;
+      left: auto;
+    }
   </style>
 </head>
 
@@ -40,12 +54,19 @@
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
           <li class="nav-item">
-            <img src="avatar1.png" class="profile-img"></img>
+            <div class="dropdown">
+                <img  id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" src="pp_filler.png" class="profile-img"></img>
+              <div id="submenu"  class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" onclick=signOut()>Çıkış Yap</a>
+                <a class="dropdown-item" href="#">Hesap Ayarları</a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
     </div>
   </nav>
+
   <br />
   <br />
   <div class="container gedf-wrapper">
@@ -87,11 +108,14 @@
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script src="signout.js"></script>
   <script>
     //Card Related Jobs
     var userID = localStorage.getItem("uid");
     console.log(userID);
-
+    let dropdownMenu = document.getElementById("dropdownMenuButton");
+    
+  
     const firebaseConfig = {
       apiKey: "AIzaSyBhJTyPZintjfuPLN-yI6ykNeE48OVrrt4",
       authDomain: "otm-share.firebaseapp.com",
@@ -107,7 +131,36 @@
     const db = firebase.firestore();
 
     let sects = [];
+
+    if (userID === "") {
+      dropdownMenu.src = "pp_filler.png";
+      document.getElementById("submenu").remove();
+      dropdownMenu.addEventListener("click", signin);
+    }
+    else
+      db.collection("Users").doc(userID).get().then(userDoc => {
+        dropdownMenu.src = userDoc.data().avatar;
+      })
     
+    function signin()
+    {
+      window.location.href="signin.html";
+    }
+    
+    function likeSection(userID, sectionID)
+    {
+       
+    }
+    
+    function checkIsLiked(likes, section, icon, count)
+    {
+        if (likes.includes(section)){
+          console.log("");
+          icon.classList.remove("bi-heart");
+          icon.classList.add("bi-heart-fill");
+          icon.innerHTML = " "+count;
+        }
+    }
     db.collection("Section").orderBy("createTime", "desc").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         
@@ -125,16 +178,6 @@
         // Belirli bir kullanıcının verilerini Users koleksiyonundan al
         db.collection("Users").doc(creatorUid).get().then((userDoc) => {
           if (userDoc.exists) {
-            /*
-            if (userDoc.data().uid === "AXDi0H549id10hfdf6sxxmiAW0h1")
-            {
-              let shares = userDoc.data().shares || [];
-              shares.push(doc.id);
-              db.collection("Users").doc("AXDi0H549id10hfdf6sxxmiAW0h1").update({
-                shares: shares
-              })
-            }*/
-            // Kullanıcının adını alma
             userName = userDoc.data().username;
             userPP = userDoc.data().avatar;
             console.log(userPP);
@@ -211,6 +254,10 @@
             else
               loveIcon.textContent = " " + likeCount;
 
+            loveIcon.onclick= likeSection();
+
+            checkIsLiked(userDoc.data().likes, doc.id, loveIcon, likeCount);
+            
             const commentIcon = document.createElement("i");
             commentIcon.classList.add("bi", "bi-chat", "footer");
 
