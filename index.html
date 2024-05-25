@@ -112,7 +112,6 @@
   <script>
     //Card Related Jobs
     var userID = localStorage.getItem("uid");
-    console.log(userID);
     let dropdownMenu = document.getElementById("dropdownMenuButton");
     
   
@@ -130,7 +129,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let sects = [];
 
     if (userID === "") {
       dropdownMenu.src = "pp_filler.png";
@@ -147,32 +145,58 @@
       window.location.href="signin.html";
     }
     
-    function likeSection(userID, sectionID)
+    function likeSection()
     {
-       
+      event.stopPropagation();
+        alert("likeSection");
+
+      let likes = userDoc.data().likes || []; // Kullanıcının mevcut beğenilerini al
+      const docID = doc.id;
+
+      console.log("Initial likes length:" + likes.length);
+
+      if (likes.includes(docID)) {
+        // Kullanıcı belgeyi daha önce beğenmişse beğeniyi kaldır
+        likes = likes.filter(id => id !== docID);
+        removeSection(userID, likes, docID, loveIcon);
+        loveIcon.classList.remove("bi-heart-fill");
+        loveIcon.classList.add("bi-heart");
+        loveIcon.innerHTML = likers.length > 1 ? likers.length - 1 : "";
+      } else
+      {
+        console.log("Else");
+        loveIcon.classList.add("bi-heart-fill");
+        loveIcon.classList.remove("bi-heart");
+        loveIcon.innerHTML =" ";
+        loveIcon.innerHTML +=doc.data().likers.length+ 1;
+        likes.push(doc.id);
+        db.collection("Users").doc(userID).update({
+          likes: likes
+        }).then(function (){
+          alert("Likes updated");
+          console.log("Length of likes: " + likes.length);
+        });
+      }
+    }
+    function removeSection(userID, likes, sectionID, icon)
+    {
+      const index = likes.indexOf(sectionID);
+      likes.splice(index,1);
+      db.collection("Users").doc(userID).update(
+      {
+        likes: likes
+      })
+      icon.classList.remove("bi-heart-fill");
+      icon.classList.add("bi-heart");
     }
     
-    function checkIsLiked(likes, section, icon, count)
-    {
-        if (likes.includes(section)){
-          console.log("");
-          icon.classList.remove("bi-heart");
-          icon.classList.add("bi-heart-fill");
-          icon.innerHTML = " "+count;
-        }
-    }
     db.collection("Section").orderBy("createTime", "desc").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         
         const creatorUid = doc.data().creator;
-        if (creatorUid === "AXDi0H549id10hfdf6sxxmiAW0h1")
-        {
-          sects.push(doc.id);
-          console.log(doc.id);
-        }
+        
         let userName = "";
         let userPP = "";
-        // console.log("Create Time: "+doc.data().createTime);
         const pastTime = doc.data().createTime.toDate();
         const elapsedTime = timeSince(pastTime);
         // Belirli bir kullanıcının verilerini Users koleksiyonundan al
@@ -180,7 +204,6 @@
           if (userDoc.exists) {
             userName = userDoc.data().username;
             userPP = userDoc.data().avatar;
-            console.log(userPP);
             const card = document.createElement("div");
             card.classList.add(
               "card",
@@ -193,7 +216,6 @@
             );
 
             card.addEventListener("click", function () {
-              console.log("URL: " + doc.data().url);
               // window.location.href = doc.data().url;
               window.open(doc.data().url, "_blank");
             });
@@ -238,7 +260,6 @@
             spoti.classList.add("bi-spotify");
 
             shareIcon.addEventListener("click", function () {
-              console.log("Share div working hey dudii");
               event.stopPropagation();
               copyUrlToClipboard(doc.data().url);
             });
@@ -254,9 +275,12 @@
             else
               loveIcon.textContent = " " + likeCount;
 
-            loveIcon.onclick= likeSection();
-
-            checkIsLiked(userDoc.data().likes, doc.id, loveIcon, likeCount);
+            //loveIcon.addEventListener("click",);
+            loveIcon.addEventListener("click", function ()
+            {
+              likeSection(userID,likes, doc.id, loveIcon);
+            });
+            //checkIsLiked(userDoc.data().likes, doc.id, loveIcon, likeCount);
             
             const commentIcon = document.createElement("i");
             commentIcon.classList.add("bi", "bi-chat", "footer");
@@ -317,44 +341,23 @@
       }
     }
     function copyUrlToClipboard(url) {
-      // Geçici bir textarea oluştur
       var textarea = document.createElement("textarea");
-      // URL'yi textarea içine yerleştir
       textarea.value = url;
-      // Doküman içinde textarea'yı gizle
       textarea.style.position = "fixed";
       textarea.style.opacity = 0;
       document.body.appendChild(textarea);
-      // URL'yi seç ve kopyala
       textarea.select();
       document.execCommand("copy");
-      // Artık textarea'ya ihtiyacımız yok, dolayısıyla onu kaldır
       document.body.removeChild(textarea);
       alert("Link Kopyalandı Şefim!");
     }
 
     //Sharing a new section:
     var highestId = 0;
-    function findHighestID() {
-      return db
-        .collection("Section")
-        .orderBy("id", "desc")
-        .limit(1)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
-            highestId = doc.data().id + 1;
-            console.log(highestId);
-          });
-        });
-    }
 
     const sectionForm = document.getElementById("sectionCreationForm");
     sectionForm.addEventListener("submit", function (event) {
       event.preventDefault(); // Formun varsayılan davranışını engelle
-
-      // Burada kayıt işlemlerini yapabilirsiniz
       sectionCreation();
       sectionForm.reset();
     });
@@ -369,7 +372,6 @@
           .get()
           .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-              console.log(doc.id, " => ", doc.data());
               highestId = doc.data().id + 1;
               createSection(postLink, content);
             });
@@ -396,7 +398,6 @@
           url: postLink,
         })
         .then(function (docRef) {
-          console.log("Document written with ID: ", docRef.id);
           addSectionToCreator(docRef.id);
           // Veri başarıyla eklendiğinde kullanıcıya bilgi vermek için uygun bir mesaj görüntüleyebilirsiniz.
           alert("Veri başarıyla eklendi!");
@@ -410,7 +411,6 @@
 
     function addSectionToCreator(docId) {
       const uid = localStorage.getItem("uid"); // Kullanıcı kimliğini al
-      console.log(uid);
       // Kullanıcı belgesini al ve güncelleme işlemini gerçekleştir
       db.collection("Users").doc(uid).get().then((doc) => {
         if (doc.exists) {
