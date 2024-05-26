@@ -145,10 +145,16 @@
       window.location.href="signin.html";
     }
     
-    function likeSection()
+    function likeSection(doc, loveIcon)
     {
-      event.stopPropagation();
-        alert("likeSection");
+      const id= localStorage.getItem("uid");
+      console.log("ID: " + id);
+      if (id === "")
+        return;
+      else
+      {
+        db.collection("Users").doc(id).get().then((userDoc) => {
+        
 
       let likes = userDoc.data().likes || []; // Kullanıcının mevcut beğenilerini al
       const docID = doc.id;
@@ -161,21 +167,24 @@
         removeSection(userID, likes, docID, loveIcon);
         loveIcon.classList.remove("bi-heart-fill");
         loveIcon.classList.add("bi-heart");
-        loveIcon.innerHTML = likers.length > 1 ? likers.length - 1 : "";
+        loveIcon.innerHTML = likes.length > 1 ? likes.length - 1 : "";
       } else
       {
         console.log("Else");
         loveIcon.classList.add("bi-heart-fill");
         loveIcon.classList.remove("bi-heart");
         loveIcon.innerHTML =" ";
-        loveIcon.innerHTML +=doc.data().likers.length+ 1;
+        //loveIcon.innerHTML +=userDoc.data().likers.length+ 1;
         likes.push(doc.id);
-        db.collection("Users").doc(userID).update({
+        console.log(id);  
+        db.collection("Users").doc(id).update({
           likes: likes
         }).then(function (){
           alert("Likes updated");
           console.log("Length of likes: " + likes.length);
         });
+      }
+      }); 
       }
     }
     function removeSection(userID, likes, sectionID, icon)
@@ -278,7 +287,8 @@
             //loveIcon.addEventListener("click",);
             loveIcon.addEventListener("click", function ()
             {
-              likeSection(userID,likes, doc.id, loveIcon);
+              event.stopPropagation();
+              likeSection(doc.id, loveIcon);
             });
             //checkIsLiked(userDoc.data().likes, doc.id, loveIcon, likeCount);
             
