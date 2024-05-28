@@ -164,7 +164,7 @@
           if (likes.includes(docID)) {
             // Kullanıcı belgeyi daha önce beğenmişse beğeniyi kaldır
             likes = likes.filter(id => id !== docID);
-            removeSection(userID, likes, docID, loveIcon);
+            removeSection(doc, loveIcon);
             loveIcon.classList.remove("bi-heart-fill");
             loveIcon.classList.add("bi-heart");
             loveIcon.innerHTML = likes.length > 1 ? likes.length - 1 : "";
@@ -175,12 +175,26 @@
             loveIcon.classList.add("bi-heart-fill");
             loveIcon.classList.remove("bi-heart");
             loveIcon.innerHTML =" ";
-            //loveIcon.innerHTML +=userDoc.data().likers.length+ 1;
             likes.push(doc);
-            console.log(id);  
+            console.log(id);
             db.collection("Users").doc(id).update({
               likes: likes
             }).then(function (){
+              
+              db.collection("Section").doc(doc).get().then((sectionDoc) =>{
+                  let likers = sectionDoc.data().likers || [];
+                  
+                  likers.push(id);
+                  const likersCount = likers.length;
+                  console.log("Likers. leng"+likers.length);
+                  loveIcon.innerHTML += likersCount;
+                  
+                  db.collection("Section").doc(doc).update({
+                    likers: likers
+                  })
+                
+                
+              })
               alert("Likes updated");
               console.log("Length of likes: " + likes.length);
             });
@@ -188,19 +202,36 @@
         }); 
       }
     }
-    function removeSection(userID, likes, sectionID, icon)
+    function removeSection(sectionID, icon)
     {
-      const index = likes.indexOf(sectionID);
-      likes.splice(index,1);
-      db.collection("Users").doc(userID).update(
-      {
-        likes: likes
-      })
-      icon.classList.remove("bi-heart-fill");
-      icon.classList.add("bi-heart");
+      const id = localStorage.getItem("uid");
+
+      //Remove the section from user's likes.
+      //Remove the user from section's likers.
+
+      db.collection("Users").doc(id).get().then((userDoc) => {
+        let likes = userDoc.data().likes || [];
+        const index = likes.indexOf(sectionID);
+        likes.splice(index,1);
+        db.collection("Users").doc(id).update(
+        {
+          likes: likes
+        })
+      });
+      db.collection("Section").doc(sectionID).get().then((sectionDoc) => {
+        
+        let likers = sectionDoc.data().likers || [];
+        const index = likers.indexOf(id);
+        likers.splice(index, 1);
+        
+        db.collection("Section").doc(sectionID).update(
+          {
+            likers : likers
+          })
+      });
     }
     
-    db.collection("Section").orderBy("createTime", "desc").get().then((querySnapshot) => {
+    db.collection("Section").orderBy("id", "desc").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         
         const creatorUid = doc.data().creator;
@@ -288,11 +319,20 @@
             //loveIcon.addEventListener("click",);
             loveIcon.addEventListener("click", function ()
             {
-              console.log(doc.id);
               event.stopPropagation();
               likeSection(doc.id, loveIcon);
             });
-            //checkIsLiked(userDoc.data().likes, doc.id, loveIcon, likeCount);
+            
+            //Check Likes
+            db.collection("Users").doc(localStorage.getItem("uid")).get().then((userDoc) =>
+            {
+              if (userDoc.data().likes)
+              if (userDoc.data().likes.includes(doc.id))
+              {
+                loveIcon.classList.add("bi-heart-fill");
+                loveIcon.classList.remove("bi-heart");
+              }
+            })
             
             const commentIcon = document.createElement("i");
             commentIcon.classList.add("bi", "bi-chat", "footer");
