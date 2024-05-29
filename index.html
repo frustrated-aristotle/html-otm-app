@@ -307,6 +307,11 @@
 
             shareIcon.classList.add("bi", "bi-share", "footer");//,"card-footer");
 
+            const bookmarkIcon = document.createElement("i");
+            bookmarkIcon.classList.add("bi", "bi-bookmark", "footer");            
+            bookmarkIcon.style = "margin-right: 0px";
+            
+            
             const loveIcon = document.createElement("i");
             loveIcon.classList.add("bi", "bi-heart", "footer");
             const likeCount = doc.data().likers.length;
@@ -336,11 +341,12 @@
             
             const commentIcon = document.createElement("i");
             commentIcon.classList.add("bi", "bi-chat", "footer");
-
+            
             // shareIcon.textContent = " Paylaş";
             footerDiv.appendChild(shareIcon);
             footerDiv.appendChild(commentIcon);
             footerDiv.appendChild(loveIcon);
+            footerDiv.appendChild(bookmarkIcon);
             // shareIcon.appendChild(spoti);
             card.appendChild(title);
             title.appendChild(profileImg);
