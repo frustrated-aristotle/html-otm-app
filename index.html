@@ -295,7 +295,11 @@
 
             const footerDiv = document.createElement("div");
             footerDiv.classList.add("mb-3");
+            footerDiv.style ="display: flex; justify-content: space-between";
 
+            const iconContainer = document.createElement("div");
+            iconContainer.style.display = "flex";
+            
             const shareIcon = document.createElement("i");
             const spoti = document.createElement("icon");
             spoti.classList.add("bi-spotify");
@@ -308,8 +312,7 @@
             shareIcon.classList.add("bi", "bi-share", "footer");//,"card-footer");
 
             const bookmarkIcon = document.createElement("i");
-            bookmarkIcon.classList.add("bi", "bi-bookmark", "footer");            
-            bookmarkIcon.style = "margin-right: 0px";
+            bookmarkIcon.classList.add("bi", "bi-bookmark", "footer-right");            
             
             
             const loveIcon = document.createElement("i");
@@ -341,11 +344,16 @@
             
             const commentIcon = document.createElement("i");
             commentIcon.classList.add("bi", "bi-chat", "footer");
+
+            iconContainer.appendChild(shareIcon);
+            iconContainer.appendChild(commentIcon);
+            iconContainer.appendChild(loveIcon);
             
             // shareIcon.textContent = " Paylaş";
-            footerDiv.appendChild(shareIcon);
+           /* footerDiv.appendChild(shareIcon);
             footerDiv.appendChild(commentIcon);
-            footerDiv.appendChild(loveIcon);
+            footerDiv.appendChild(loveIcon);*/
+            footerDiv.appendChild(iconContainer);
             footerDiv.appendChild(bookmarkIcon);
             // shareIcon.appendChild(spoti);
             card.appendChild(title);
