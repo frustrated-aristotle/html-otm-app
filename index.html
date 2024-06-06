@@ -144,11 +144,100 @@
     {
       window.location.href="signin.html";
     }
+    const actionEnum = {
+      like : 0,
+      save: 1
+    }
+    function actionSection(doc, icon, action)
+    {
+      let fill= "";
+      let empty = "";
+      const id = localStorage.getItem("uid");
+      if (id === "")
+        return;
+      else
+      {
+        db.collection("Users").doc(id).get().then((userDoc) =>
+        {
+          let genericList = [];
+          const docID = doc;
+          if (action === actionEnum.like)
+          {
+            genericList = userDoc.data().likes || [];
+            fill = "bi-heart-fill";
+            empty = "bi-heart";
+          }
+          else
+          {
+            genericList = userDoc.data().saves || [];
+            fill = "bi-bookmark-fill";
+            empty = "bi-bookmark";
+          }
+          
+          if (genericList.includes(docID))
+          {
+            genericList.filter(id => id !== docID);
+            actionRemove(doc, icon,  action, fill, empty);
+          }
+          else
+          {
+            icon.classList.add(fill);
+            icon.classList.remove(empty);
+            icon.innerHTML = " ";
+            genericList.push(doc);
+            if (action === actionEnum.like)
+            {
+              db.collection("Users").doc(id).update(
+                {
+                  likes : genericList
+                }).then(function (){
+  
+                db.collection("Section").doc(doc).get().then((sectionDoc) =>{
+                  let likers = sectionDoc.data().likers || [];
+  
+                  likers.push(id);
+                  const likersCount = likers.length;
+                  loveIcon.innerHTML += likersCount;
+  
+                  db.collection("Section").doc(doc).update({
+                    likers: likers
+                  })
+                })
+              })
+            }
+            else if (action === actionEnum.save)
+            {
+              db.collection("Users").doc(id).update(
+                {
+                  likes: genericList 
+                }).then(function (){
+                  db.collection("Section").doc(doc).get().then((sectionDoc) =>{
+                    let saves = sectionDoc.data().saves || [];
+                    
+                    saves.push(id);
+                    const savesCount = saves.length;
+                    icon.innerHTML += savesCount;
+                    
+                    db.collection("Section").doc(doc).update({
+                      saves: saves
+                    })
+                  })
+              })
+            }
+          }
+          
+        }
+        )
+      }
+    }
     
+    function actionRemove(doc, icon, action, firstAction, secondAction)
+    {
+      
+    }
     function likeSection(doc, loveIcon)
     {
       const id= localStorage.getItem("uid");
-      console.log("doc: " + doc);
       if (id === "")
         return;
       else
@@ -158,16 +247,11 @@
 
           let likes = userDoc.data().likes || []; // Kullanıcının mevcut beğenilerini al
           const docID = doc;
-          console.log(docID);
-          console.log("Initial likes length:" + likes.length);
     
           if (likes.includes(docID)) {
             // Kullanıcı belgeyi daha önce beğenmişse beğeniyi kaldır
             likes = likes.filter(id => id !== docID);
             removeSection(doc, loveIcon);
-            loveIcon.classList.remove("bi-heart-fill");
-            loveIcon.classList.add("bi-heart");
-            loveIcon.innerHTML = likes.length > 1 ? likes.length - 1 : "";
           }
           else
           {
@@ -186,7 +270,6 @@
                   
                   likers.push(id);
                   const likersCount = likers.length;
-                  console.log("Likers. leng"+likers.length);
                   loveIcon.innerHTML += likersCount;
                   
                   db.collection("Section").doc(doc).update({
@@ -205,7 +288,8 @@
     function removeSection(sectionID, icon)
     {
       const id = localStorage.getItem("uid");
-
+      icon.classList.remove("bi-heart-fill");
+      icon.classList.add("bi-heart");
       //Remove the section from user's likes.
       //Remove the user from section's likers.
 
@@ -213,6 +297,7 @@
         let likes = userDoc.data().likes || [];
         const index = likes.indexOf(sectionID);
         likes.splice(index,1);
+        icon.innerHTML = likes.length > 1 ? likes.length - 1 : "";
         db.collection("Users").doc(id).update(
         {
           likes: likes
